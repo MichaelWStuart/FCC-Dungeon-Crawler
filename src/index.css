@@ -1,0 +1,50 @@
+body {
+  margin: 20px 0px 0px 0px;
+  background-color: black;
+}
+body #container {
+  position: relative;
+}
+body #container #gameboard, body #container #weapon, body #container #armor {
+  background-color: white;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+body #container #weapon, body #container #armor {
+  margin-top: 10px;
+  width: 120px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0);
+  cursor: pointer;
+  text-align: center;
+}
+body #container #armor {
+  margin-top: 30px;
+}
+body #entities {
+  background-color: transparent;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+body #canvas-overlay {
+  background-color: transparent;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+body #overlay {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+}
