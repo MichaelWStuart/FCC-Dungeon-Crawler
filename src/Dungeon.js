@@ -1,10 +1,10 @@
 class Dungeon {
-  constructor(mapSize, iterations, componentSize, rooms, treasure, monsters) {
+  constructor({mapSize, iterations, roomSize, rooms}) {
     this.mapSize = mapSize;
-    this.dungeon = Object.assign({}, this.generateDungeon(iterations, componentSize, rooms, treasure, monsters));
+    this.dungeon = this.generateDungeon(iterations, roomSize, rooms);
   }
 
-  generateDungeon(iterations, componentSize, minimumNumberOfRooms, treasure, monsters) {
+  generateDungeon(iterations, componentSize, minimumNumberOfRooms) {
     let roomCenters = [];
     let temporaryDungeon;
     let roomEntrances;
@@ -59,7 +59,7 @@ class Dungeon {
     // Remove extra hall
     // Add entry, exit, treasure, and monsters
     // Convert inner and wall tiles to floors and blanks
-    return this.finalizeDungeon(grid, hallEnds, roomCenters, treasure, monsters)
+    return this.finalizeDungeon(grid, hallEnds, roomCenters);
   }
 
   addRoomOrHall(oldDungeon, roomEntrances, hallEnds, length) {
@@ -290,7 +290,7 @@ class Dungeon {
 
     const hallEnd = intersection ? intersection : this.findHallEnd(startX, startY, w, h, direction);
 
-    return {collision, hallEnd, grid: newDungeon}
+    return {collision, hallEnd, grid: newDungeon};
   }
 
   isSecondTile(x, y, startX, startY, d, direction) {
@@ -330,7 +330,7 @@ class Dungeon {
     const grid = {};
     for(let x = 0; x < this.mapSize; x++) {
       for(let y = 0; y < this.mapSize; y++) {
-        grid[[x, y]] = 'blank';
+        grid[[x, y]] = null;
       }
     }
     return Object.assign({}, grid);
@@ -406,64 +406,11 @@ class Dungeon {
 //-----------------------------------------------FINALIZATION-----------------------------------------------//
 
 
-  finalizeDungeon(grid, hallEnds, roomCenters, treasureCount, monsterCount) {
-    let tiles;
+  finalizeDungeon(grid, hallEnds, roomCenters) {
+    roomCenters.forEach((center) => {
+      grid[center] = 'center';
+    })
     grid = hallEnds.length === 1 ? this.hallClipper(grid, hallEnds) : grid;
-    grid = this.entryExitAdder(grid, roomCenters);
-    [grid, tiles] = this.dungeonSimplifier(grid);
-    [grid, tiles] = this.treasureSpawner(grid, tiles, treasureCount);
-    grid = this.monsterSpawner(grid, tiles, monsterCount);
-    return grid;
-  }
-
-  treasureSpawner(grid, tiles, treasureCount) {
-    let randomNumber;
-    let location;
-    for (let i = 0; i < treasureCount; i++) {
-      randomNumber = Math.floor(Math.random() * tiles.length);
-      location = tiles[randomNumber];
-      tiles.splice(randomNumber, 1);
-      grid[[location[0],location[1]]] = 'treasure';
-    }
-    return [grid, tiles];
-  }
-
-  monsterSpawner(grid, tiles, monsterCount) {
-    let randomNumber;
-    let location;
-    for (let i = 0; i < monsterCount; i++) {
-      randomNumber = Math.floor(Math.random() * tiles.length);
-      location = tiles[randomNumber];
-      tiles.splice(randomNumber, 1);
-      grid[[location[0],location[1]]] = 'monster';
-    }
-    return grid;
-  }
-
-  dungeonSimplifier(grid) {
-    const tiles = []
-    for(let x = 0; x < this.mapSize; x++) {
-      for(let y = 0; y < this.mapSize; y++) {
-        if (grid[[x,y]] === 'inner') {
-          tiles.push([x,y])
-          grid[[x, y]] = 'floor';
-        } else if ((grid[[x,y]] === 'entrance') || (grid[[x,y]] === 'hall')) {
-          grid[[x, y]] = 'floor';
-        }
-      }
-    }
-    return [grid, tiles];
-  }
-
-  entryExitAdder(grid, roomCenters) {
-    roomCenters.shift(); //remove initial room's entrance
-    let randomNumber = Math.floor(Math.random() * roomCenters.length);
-    const entry = roomCenters[randomNumber];
-    roomCenters.splice(randomNumber, 1);
-    randomNumber = Math.floor(Math.random() * roomCenters.length);
-    const exit = roomCenters[randomNumber];
-    grid[[entry[0],entry[1]]] = 'entry';
-    grid[[exit[0],exit[1]]] = 'exit';
     return grid;
   }
 
@@ -486,19 +433,19 @@ class Dungeon {
       while (grid[[x,y]] !== 'entrance') {
         switch (direction) {
           case 'up':
-            grid[[x, y]] = 'blank';
+            grid[[x, y]] = null;
             y++;
             break;
           case 'down':
-            grid[[x, y]] = 'blank';
+            grid[[x, y]] = null;
             y--;
             break;
           case 'left':
-            grid[[x, y]] = 'blank';
+            grid[[x, y]] = null;
             x++;
             break;
           case 'right':
-            grid[[x, y]] = 'blank';
+            grid[[x, y]] = null;
             x--;
             break;
           default: break;
@@ -507,19 +454,19 @@ class Dungeon {
       switch (direction) {
         case 'up':
           grid[[x, y]] = 'inner';
-          grid[[x, y - 1]] = 'wall'
+          grid[[x, y - 1]] = 'wall';
           break;
         case 'down':
           grid[[x, y]] = 'inner';
-          grid[[x, y + 1]] = 'wall'
+          grid[[x, y + 1]] = 'wall';
           break;
         case 'left':
           grid[[x, y]] = 'inner';
-          grid[[x - 1, y]] = 'wall'
+          grid[[x - 1, y]] = 'wall';
           break;
         case 'right':
           grid[[x,y]] = 'inner';
-          grid[[x + 1, y]] = 'wall'
+          grid[[x + 1, y]] = 'wall';
           break;
         default: break;
       }
@@ -528,4 +475,4 @@ class Dungeon {
   }
 }
 
-export default Dungeon
+export default Dungeon;

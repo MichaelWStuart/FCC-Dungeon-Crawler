@@ -1,50 +1,104 @@
 body {
-  margin: 20px 0px 0px 0px;
   background-color: black;
 }
-body #container {
-  position: relative;
+
+#overlay, #loading, #difficulty {
+  height: 352px;
+  width: 352px;
 }
-body #container #gameboard, body #container #weapon, body #container #armor {
-  background-color: white;
-  position: absolute;
-  margin: auto;
+
+#gameboard, #entities, #overlay, .canvas-overlay, #fog-of-war, #weapon, #armor, #loading, #difficulty, #exp-bar, #level, #exp-points, #title {
+  background-color: transparent;
   left: 0;
+  margin: auto;
+  position: absolute;
   right: 0;
 }
-body #container #weapon, body #container #armor {
-  margin-top: 10px;
-  width: 120px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0);
-  cursor: pointer;
+
+#loading, #difficulty {
+  color: #A5A96D;
+  font-family: 'Aladin', cursive;
+  font-size: 18px;
+  line-height: 352px;
   text-align: center;
 }
-body #container #armor {
-  margin-top: 30px;
+
+#title {
+  border-bottom: 2px solid #A5A96D;
+  color: #A5A96D;
+  font-family: 'Aladin', cursive;
+  height: 153px;
+  line-height: 257px;
+  text-align: center;
+  width: 253px;
 }
-body #entities {
-  background-color: transparent;
-  position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
+
+.setDifficulty, #game-over, #victory, #exp-points {
+  cursor: pointer;
 }
-body #canvas-overlay {
-  background-color: transparent;
-  position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
+
+#weapon, #armor {
+  background: rgba(255, 255, 255, 0);
+  color: #CECECE;
+  cursor: pointer;
+  font-size: 16px;
+  height: 40px;
+  text-align: center;
+  width: 80px;
 }
-body #overlay {
-  position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
-  width: 360px;
-  height: 360px;
+
+#weapon {
+  right: 225px;
+  top: 20px;
+}
+
+#armor {
+  left: 225px;
+  top: 20px;
+}
+
+#level {
+  color: #A5A96D;
+  font-family: 'Aladin', cursive;
+  height: 18px;
+  text-align: center;
+  top: 13px;
+  width: 96px;
+}
+
+#exp-points {
+  color: grey;
+  font-family: 'Aladin', cursive;
+  font-size: 11px;
+  height: 15px;
+  text-align: center;
+  top: 37px;
+  width: 100px;
+}
+
+#exp-bar {
+  top: 33px;
+}
+
+#overlay {
   border-radius: 50%;
   cursor: pointer;
   user-select: none;
+}
+
+#weapon-info, #armor-info {
+  display: none;
+  color: silver;
+  font-family: 'Aladin', cursive;
+  font-size: 13px;
+  text-align: center;
+  width: 100px;
+}
+
+.toggle-show:hover #weapon-info, .toggle-show:hover #armor-info {
+  display: block;
+}
+
+.toggle-show:hover #weapon-icon, .toggle-show:hover #armor-icon {
+  display: none;
 }
