@@ -19,6 +19,7 @@ class Game extends Component {
     this.move = this.move.bind(this);
     this.animateMonsters = this.animateMonsters.bind(this);
     this.attack = this.attack.bind(this);
+    this.monsters = Monsters();
     this.state = {dungeonParams: {dungeonLevel: 1, mapSize: 100, iterations: 100, roomSize: 6, rooms: 15}};
   }
 
@@ -91,7 +92,8 @@ class Game extends Component {
     [roomTiles, position, stairsDown, stairsUp] = this.spawnStairs(centerTiles, roomTiles);
     monsters = this.spawnMonsters(roomTiles);
     if ( this.state.dungeonParams.dungeonLevel === 10) {
-      const goddess = new Monsters['Goddess']();
+      const goddessConstructor = this.monsters[10][0];
+      const goddess = new goddessConstructor();
       goddess.position = stairsDown;
       monsters.push(goddess);
     }
@@ -115,17 +117,17 @@ class Game extends Component {
   }
 
   spawnTreasure(centerTiles) {
-    const diffMod = this.props.difficulty === 'easy' ? 8 : this.props.difficulty === 'normal' ? 3 : 1;
+    const diffMod = this.props.difficulty === 'easy' ? 6 : this.props.difficulty === 'normal' ? 3 : 1;
     const treasureCount = this.state.dungeonParams.dungeonLevel  + diffMod ;
     const treasures = [];
     const itemNames = [];
-    for (let item in Treasure) {
-      if (Treasure[item].itemLevel() === this.state.dungeonParams.dungeonLevel) {
-        for(let i = 0; i < Treasure[item].popularity(); i++) {
-          itemNames.push(Treasure[item].name);
-        }
+    const levelTreasures = Treasure[this.state.dungeonParams.dungeonLevel - 1];
+
+    Object.keys(levelTreasures).forEach((treasure) => {
+      for(let i = 0; i < levelTreasures[treasure].popularity; i++) {
+        itemNames.push(treasure);
       }
-    }
+    });
 
     while (treasures.length < treasureCount) {
       let sample = _.sample(centerTiles);
@@ -133,7 +135,7 @@ class Game extends Component {
         return !((tile[0] === sample[0]) && (tile[1] === sample[1]));
       })
       let itemName = _.sample(itemNames);
-      let item = new Treasure[itemName]();
+      let item = _.cloneDeep(levelTreasures[itemName]);
       item.position = [sample[0],sample[1]];
       treasures.push(item);
     }
@@ -157,23 +159,17 @@ class Game extends Component {
   }
 
   spawnMonsters(roomTiles) {
-    const level = this.state.dungeonParams.dungeonLevel;
+    const level = this.state.dungeonParams.dungeonLevel - 1;
     const monsterCount = (level * 2) + 20;
     const monsters = [];
-    const monsterNames = [];
-    for (let monster in Monsters) {
-      if (Monsters[monster].monsterLevel() === level) {
-        monsterNames.push(Monsters[monster].name);
-      }
-    }
+    const levelMonsters = this.monsters[level];
+
     while (monsters.length < monsterCount) {
-      let sample = _.sample(roomTiles);
-      roomTiles = roomTiles.filter((tile) => {
-        return !((tile[0] === sample[0]) && (tile[1] === sample[1]));
-      })
-      let monsterName = _.sample(monsterNames);
-      let monster = new Monsters[monsterName]();
-      monster.position = [sample[0],sample[1]];
+      //TODO: grab random room tiles until you get one that's not already used by another monster.
+      const randomRoomTile = _.sample(roomTiles);
+      const randomMonster = _.sample(levelMonsters);
+      const monster = new randomMonster();
+      monster.position = [randomRoomTile[0],randomRoomTile[1]];
       monsters.push(monster);
     }
     return monsters;
@@ -347,7 +343,7 @@ class Game extends Component {
       })
       const loot = target.dropLoot();
       if (loot) {
-        let item = new Treasure[loot]();
+        let item = _.cloneDeep(loot);
         item.position = position;
         treasure.push(item);
       }
